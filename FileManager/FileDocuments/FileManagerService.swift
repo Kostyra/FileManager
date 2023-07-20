@@ -21,16 +21,33 @@ final class FileManagerService: FileManagerServiceProtocol {
 
     var pathFolderCurrentFolder: String
     
+    
+    
     init() {
         self.pathFolderCurrentFolder = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
+        checkSort()
     }
     
     init(pathFolderCurrentFolder: String) {
         self.pathFolderCurrentFolder = pathFolderCurrentFolder
+        checkSort()
     }
     
-    var item: [String] {
-        (try? FileManager.default.contentsOfDirectory(atPath: pathFolderCurrentFolder)) ?? []
+//    var item: [String] {
+//        (try? FileManager.default.contentsOfDirectory(atPath: pathFolderCurrentFolder)) ?? []
+//    }
+    
+    lazy var item: [String] = (try? FileManager.default.contentsOfDirectory(atPath: pathFolderCurrentFolder)) ?? []
+    
+    
+    private func checkSort() {
+        if UserDefaults.standard.bool(forKey: "sort") {
+            let sort = item.sorted(by: <)
+            item = sort
+        } else {
+            let sort = item.sorted(by: >)
+            item = sort
+        }
     }
     
     func contentsOfDirectory(atPath path: String) -> [String] {
@@ -40,7 +57,8 @@ final class FileManagerService: FileManagerServiceProtocol {
     func createDirectory(name: String) {
         do {
             try FileManager.default.createDirectory(atPath: pathFolderCurrentFolder + "/" + name, withIntermediateDirectories: true)
-            
+            item = (try? FileManager.default.contentsOfDirectory(atPath: pathFolderCurrentFolder)) ?? []
+            checkSort()
         } catch {
             print("Failed create Directory\(error)")
         }
@@ -52,6 +70,8 @@ final class FileManagerService: FileManagerServiceProtocol {
                 if let data = image.pngData() {
                     do {
                         try data.write(to: url)
+                        item = (try? FileManager.default.contentsOfDirectory(atPath: pathFolderCurrentFolder)) ?? []
+                        checkSort()
                     } catch {
                         print("Unable to Write  Image Data to Disk")
                     }
@@ -62,6 +82,8 @@ final class FileManagerService: FileManagerServiceProtocol {
         let path = pathFolderCurrentFolder + "/" + item[atIndex]
         do {
             try FileManager.default.removeItem(atPath: path)
+            item = (try? FileManager.default.contentsOfDirectory(atPath: pathFolderCurrentFolder)) ?? []
+            checkSort()
         } catch {
             print("Failed to remove content: \(error)")
         }

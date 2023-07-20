@@ -17,7 +17,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         print(NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0])
         guard let scene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: scene)
-        let viewVC = TableViewController()
+        let viewVC = LoginViewController()
         let viewNC = UINavigationController(rootViewController: viewVC)
         
         window.rootViewController = viewNC

@@ -27,7 +27,5 @@ final class TextPicker {
         
         viewConroller.present(alert, animated: true)
     }
-    
-    
    private init() {}
 }

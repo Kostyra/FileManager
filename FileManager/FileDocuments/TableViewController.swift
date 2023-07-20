@@ -42,6 +42,7 @@ class TableViewController: UITableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tableView.reloadData()
+        reload() 
     }
 
     @objc func buttonAddDocument() {
@@ -130,5 +131,6 @@ extension TableViewController {
 extension TableViewController: TableViewControllerDelegate {
     func reload() {
         tableView.reloadData()
+        folderManager.checkSort()
     }
 }

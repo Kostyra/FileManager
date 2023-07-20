@@ -68,11 +68,12 @@ final class UserDefaultsViewController: UIViewController {
         let sortValue = UserDefaults.standard.bool(forKey: "sort")
         if sortValue {
             switchSort.selectedSegmentIndex = 0
-            print(1)
+            
         } else {
             switchSort.selectedSegmentIndex = 1
-            print(2)
+            
         }
+        
         
     }
 
@@ -90,25 +91,23 @@ final class UserDefaultsViewController: UIViewController {
     }
     
     @objc private func switchActionSort(_ sender: UISegmentedControl) {
-        switch sender.selectedSegmentIndex {
-        case 0:
-            UserDefaults.standard.set(true, forKey: "sort")
-            let sortValue = UserDefaults.standard.bool(forKey: "sort")
-            print(sortValue)
-            let sort = fileManager.item.sorted(by: <)
-            fileManager.item = sort
-            delegate?.reload()
-
-        case 1:
-            UserDefaults.standard.set(false, forKey: "sort")
-            let sortValue = UserDefaults.standard.bool(forKey: "sort")
-            print(sortValue)
-            let sort = fileManager.item.sorted(by: >)
-            fileManager.item = sort
-            delegate?.reload()
-        default:
-            break
-        }
+//        switch sender.selectedSegmentIndex {
+//        case 0:
+//            UserDefaults.standard.set(true, forKey: "sort")
+//            let sort = fileManager.item.sorted(by: <)
+//            fileManager.item = sort
+//            delegate?.reload()
+//
+//        case 1:
+//            UserDefaults.standard.set(false, forKey: "sort")
+//            let sort = fileManager.item.sorted(by: >)
+//            fileManager.item = sort
+//            delegate?.reload()
+//        default:
+//            break
+//        }
+        UserDefaults.standard.set(!UserDefaults.standard.bool(forKey: "sort"), forKey: "sort")
+        delegate?.reload()
     }
     
     func setup() {

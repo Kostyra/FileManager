@@ -40,7 +40,7 @@ final class FileManagerService: FileManagerServiceProtocol {
     lazy var item: [String] = (try? FileManager.default.contentsOfDirectory(atPath: pathFolderCurrentFolder)) ?? []
     
     
-    private func checkSort() {
+     func checkSort() {
         if UserDefaults.standard.bool(forKey: "sort") {
             let sort = item.sorted(by: <)
             item = sort

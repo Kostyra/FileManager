@@ -7,28 +7,42 @@
 
 import UIKit
 
-class TableViewController: UITableViewController {
+protocol TableViewControllerDelegate: AnyObject {
+    func reload()
+}
 
+class TableViewController: UITableViewController {
+    
     let imageFolder = UIImage(systemName: "folder.badge.plus")
     let imagePhoto = UIImage(systemName: "photo")
+    let imageBack = UIImage(systemName: "arrowshape.turn.up.backward")
     var folderManager = FileManagerService()
     var directories: [String]?
+    
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         
+//        let buttonBack = UIBarButtonItem(image: imageBack, style: .plain, target: self, action: #selector(buttonActionBack))
+//        navigationItem.leftBarButtonItem = buttonBack
         let buttonDocuments = UIBarButtonItem(image: imageFolder, style: .plain, target: self, action: #selector(buttonAddDocument))
         let buttonImage = UIBarButtonItem(image: imagePhoto, style: .plain, target: self, action: #selector(buttonAddPhoto))
         navigationItem.rightBarButtonItems = [buttonImage, buttonDocuments]
         
-        folderManager.titleManagerService{ title in
-            self.title = title
-        }
+        
+        folderManager.titleManagerService{ title in self.title = title }
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .always
         
         
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tableView.reloadData()
+        reload() 
     }
 
     @objc func buttonAddDocument() {
@@ -45,6 +59,7 @@ class TableViewController: UITableViewController {
         imagePicker.sourceType = .photoLibrary
         present(imagePicker, animated: true, completion: nil)
     }
+    
 
     // MARK: - Table view data source
 
@@ -58,6 +73,9 @@ class TableViewController: UITableViewController {
         cell.textLabel?.text = item
         if folderManager.isDirectory(atIndex: indexPath.row) == true {
             cell.accessoryType = .disclosureIndicator
+        } else {
+            cell.accessoryType = .none
+            cell.selectionStyle = .none
         }
         return cell
     }
@@ -93,17 +111,26 @@ extension TableViewController: UIImagePickerControllerDelegate , UINavigationCon
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         dismiss(animated: true, completion: nil)
     }
+    
+    private func addButtonTappedInTable() {
+        TextPicker.defaultPicker.showNewNameFolder(in: self) { nameFolder in
+            self.folderManager.createDirectory(name: "\(nameFolder)")
+            self.tableView.reloadData()
+        }
+    }
 }
 
 extension TableViewController {
-//    static func show(in viewController: UIViewController, withPath path: String) {
-//        let fc = UIStoryboard(name: "nil", bundle: nil).instantiateViewController(withIdentifier: "TableViewController") as! TableViewController
-//        fc.folderManager = FileManagerService(pathFolderCurrentFolder: path)
-//        viewController.navigationController?.pushViewController(fc, animated: true)
-//    }
     static func show(in viewController: UIViewController, withPath path: String) {
         let fc = TableViewController()
         fc.folderManager = FileManagerService(pathFolderCurrentFolder: path)
         viewController.navigationController?.pushViewController(fc, animated: true)
+    }
+}
+
+extension TableViewController: TableViewControllerDelegate {
+    func reload() {
+        tableView.reloadData()
+        folderManager.checkSort()
     }
 }
